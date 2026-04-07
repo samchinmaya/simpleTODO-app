@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo-App</title>
+</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.8/axios.min.js"></script>
+<script>
+  async function signup(){
+
+    const username = document.getElementById("signup-username").value;
+    const password = document.getElementById("signup-password").value;
+
+    await axios.post("http://localhost:3000/signup",{
+      username:username,
+      password:password
+    });
+    alert("you've signed up!! ")
+  }
+  async function signin(){
+    const username = document.getElementById("signin-username").value;
+    const password = document.getElementById("signin-password").value;
+    const response = await axios.post("http://localhost:3000/signin",{
+      username:username,
+      password:password
+    });
+    localStorage.setItem("token",response.data.token);
+    alert("signed in successfully!! ")
+  }
+  async function addtodo(){
+    const todos = document.getElementById("todo").value;
+    const token = localStorage.getItem("token");
+    if(!token){
+      alert("first signin to get into your account")
+      return;
+    }
+
+    const response = await axios.post("http://localhost:3000/add",
+      {todo:todos},
+      {headers:{token:token}}
+    )
+    alert(response.data.message)
+  }
+  function logout(){
+    localStorage.removeItem("token");
+    alert("signin to add the todos")
+  }
+  async function deletetodo(){
+    const deletetodo = document.getElementById('selectedtodo').value;
+    const token = localStorage.getItem("token");
+    const response = await axios.delete("http://localhost:3000/delete",{
+      headers:{token:token},
+      data:{todo:deletetodo}
+    })
+    alert(response.data.message);
+  }
+</script>
+<body>
+  <div id="logout">
+    <button onclick="logout()">logout</button>
+  </div>
+  <div>
+    enter your todos: <input id="todo" type="text" placeholder="Todo" name="Todo"> <button onclick="addtodo()"> Add Todo</button>
+  </div>
+  <div id="signup">
+    
+    <input id="signup-username" type="text" name="username" placeholder="Username">
+    <input id="signup-password" type="password" name="password" placeholder="Password">
+    <button onclick="signup()">signup</button> 
+  </div>
+  <div id="signin">
+    
+    <input id="signin-username"type="text" name="username" placeholder="Username">
+    <input id="signin-password"type="password" name="password" placeholder="Password">
+    <button onclick="signin()">signin</button>  
+  </div>
+  <div id= "delete">
+    <input type="text" id="selectedtodo"> <button onclick="deletetodo()">delete-todo</button>
+  </div>
+  <div "id=todos">
+
+    
+  </div>
+  <div id="logout">
+    
+  </div>
+</body>
+</html>
